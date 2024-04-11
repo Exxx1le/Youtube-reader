@@ -1,7 +1,7 @@
 from youtube_transcript_api import YouTubeTranscriptApi
 
 
-def video_transcription(video_id):
+def video_transcription(video_id:str):
     """
     Gets video transription in russian or english and returns text as a string.
             
@@ -26,7 +26,7 @@ def video_transcription(video_id):
         print(e)
 
 
-def extract_video_id(url):
+def extract_video_id(url:str):
     """
     Extracts the video ID from a YouTube URL.
             
