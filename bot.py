@@ -1,6 +1,7 @@
 from aiogram import Bot, Dispatcher
 from aiogram.filters import Command
 from aiogram.types import Message
+
 from keys import TELEGRAM_BOT_KEY
 from open_api_requests import chat_gpt_response
 from youtube_transcripter import *
@@ -21,9 +22,7 @@ async def process_start_command(message: Message):
 # Этот хэндлер будет срабатывать на команду "/help"
 @dp.message(Command(commands=["help"]))
 async def process_help_command(message: Message):
-    await message.answer(
-        "Пришли мне ссылку на видео в YouTube, а в ответ я пришлю тебе краткое содержание видео"
-    )
+    await message.answer("Пришли мне ссылку на видео в YouTube, а в ответ я пришлю тебе краткое содержание видео")
 
 
 # Этот хэндлер будет срабатывать на любые ваши текстовые сообщения,
