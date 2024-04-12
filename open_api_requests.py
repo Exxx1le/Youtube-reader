@@ -3,13 +3,14 @@ from keys import OPEN_AI_API_KEY
 
 client = OpenAI(api_key=OPEN_AI_API_KEY)
 
-def chat_gpt_response(video_text:str):
+
+def chat_gpt_response(video_text: str) -> str:
     """
-    Gets string of text.
-            
+    Gets string of text and sends it to ChatGPT
+
     Args:
         video_text (str): Text
-            
+
     Returns:
         str: Responce of ChatGPT in russian with a short summary of the text
     """
@@ -25,10 +26,9 @@ def chat_gpt_response(video_text:str):
                 "content": f"{video_text}",
             },
         ],
-        temperature=0.7,
-        max_tokens=64,
+        temperature=0.5,
+        max_tokens=100,
         top_p=1,
     )
 
     return response
-
