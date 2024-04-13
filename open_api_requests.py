@@ -1,6 +1,6 @@
 from openai import OpenAI
 
-from keys import OPEN_AI_API_KEY
+from config import OPEN_AI_API_KEY, MAX_TOKENS
 
 client = OpenAI(api_key=OPEN_AI_API_KEY)
 
@@ -13,7 +13,7 @@ def chat_gpt_response(video_text: str) -> str:
         video_text (str): Text
 
     Returns:
-        str: Responce of ChatGPT in russian with a short summary of the text
+        str: Responce of ChatGPT with a short summary of the text
     """
     response = client.chat.completions.create(
         model="gpt-3.5-turbo-16k",
@@ -28,8 +28,8 @@ def chat_gpt_response(video_text: str) -> str:
             },
         ],
         temperature=0.5,
-        max_tokens=100,
+        max_tokens=MAX_TOKENS,
         top_p=1,
     )
 
-    return response
+    return response.choices[0].message.content

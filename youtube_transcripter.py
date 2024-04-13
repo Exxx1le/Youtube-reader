@@ -1,4 +1,5 @@
 from youtube_transcript_api import YouTubeTranscriptApi
+import tiktoken
 
 
 def transcript_video(video_id: str) -> str | None:
@@ -44,8 +45,31 @@ def extract_video_id(url: str) -> str | None:
         "(youtube|youtu|youtube-nocookie)\.(com|be)/"
         "(watch\?v=|embed/|v/|.+\?v=)?([^&=%\?]{11})"
     )
-    youtube_match = re.match(youtube_regex, url)
+    youtube_match = re.match(youtube_regex, str(url))
     if youtube_match:
         return youtube_match.group(6)
     else:
         return None
+
+
+def reduce_transcript_to_max_tokens(transcript: str, max_tokens: int) -> str:
+    """
+    Reduces the transcript text to a given maximum number of tokens.
+
+    Args:
+        transcript (str): The transcript text.
+        max_tokens (int): The maximum number of tokens allowed.
+
+    Returns:
+        str: The reduced transcript text.
+    """
+
+    encoding = tiktoken.get_encoding("cl100k_base")
+    num_tokens = len(encoding.encode(transcript))
+
+    # If tokens of transcript don't exeed max tokens returns the original transript
+    if num_tokens <= max_tokens:
+        return transcript
+
+    # Otherwise, return the substring of the transcript up to max_tokens
+    return transcript[:max_tokens]
