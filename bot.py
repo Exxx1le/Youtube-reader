@@ -1,9 +1,9 @@
-from aiogram import Bot, Dispatcher
+from aiogram import Bot, Dispatcher, F
 from aiogram.filters import Command
 from aiogram.types import Message
 import youtube_transcript_api
 
-from config import TELEGRAM_BOT_KEY, MAX_TOKENS
+from config import TELEGRAM_BOT_KEY, MAX_INPUT_TOKENS
 from open_api_requests import chat_gpt_response
 from youtube_transcripter import *
 
@@ -26,8 +26,8 @@ async def process_help_command(message: Message):
     )
 
 
-@dp.message()
-async def send_echo(message: Message):
+@dp.message(F.text)
+async def send_transctipt(message: Message):
     video_id = extract_video_id(message.text)
     if video_id is None:
         await message.answer(
@@ -38,7 +38,10 @@ async def send_echo(message: Message):
             transcription = transcript_video(video_id)
             if transcription:
                 short_transcription = reduce_transcript_to_max_tokens(
-                    transcription, MAX_TOKENS
+                    transcription, MAX_INPUT_TOKENS
+                )
+                await message.answer(
+                    "⏳Подождите немного. Генерируется короткое содержание видео. "
                 )
                 response = chat_gpt_response(short_transcription)
                 if response:
@@ -51,6 +54,11 @@ async def send_echo(message: Message):
             await message.answer("Субтитры для этого видео отключены или недоступны.🤖")
         except Exception as e:
             print(e)
+
+
+@dp.message(~F.content_type == "text")
+async def send_other(message: Message):
+    await message.answer("К сожалению, я могу распознавать только ссылки с YouTube 😢")
 
 
 if __name__ == "__main__":

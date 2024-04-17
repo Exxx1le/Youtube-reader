@@ -65,11 +65,14 @@ def reduce_transcript_to_max_tokens(transcript: str, max_tokens: int) -> str:
     """
 
     encoding = tiktoken.get_encoding("cl100k_base")
-    num_tokens = len(encoding.encode(transcript))
+    encoded_transcript = encoding.encode(transcript)
+    num_tokens = len(encoded_transcript)
 
-    # If tokens of transcript don't exeed max tokens returns the original transript
+    # If tokens of transcript don't exceed max tokens returns the original transcript
     if num_tokens <= max_tokens:
         return transcript
 
-    # Otherwise, return the substring of the transcript up to max_tokens
-    return transcript[:max_tokens]
+    # Otherwise, find the point in the encoded transcript where max_tokens is reached and decode back to text
+    reduced_encoded_transcript = encoded_transcript[:max_tokens]
+    reduced_transcript = encoding.decode(reduced_encoded_transcript)
+    return reduced_transcript

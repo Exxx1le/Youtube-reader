@@ -1,6 +1,6 @@
 from openai import OpenAI
 
-from config import OPEN_AI_API_KEY, MAX_TOKENS
+from config import OPEN_AI_API_KEY, MAX_OUTPUT_TOKENS
 
 client = OpenAI(api_key=OPEN_AI_API_KEY)
 
@@ -13,14 +13,14 @@ def chat_gpt_response(video_text: str) -> str:
         video_text (str): Text
 
     Returns:
-        str: Responce of ChatGPT with a short summary of the text
+        str: Responce of ChatGPT in russian with a short summary of the text
     """
     response = client.chat.completions.create(
         model="gpt-3.5-turbo-16k",
         messages=[
             {
                 "role": "system",
-                "content": "сделай короткую выжимку содержания текста из видео",
+                "content": "Create summary in russian of the text from video. Summary must be at least 2000 but no more than 2500 characters. If the content of the submitted text is less than 2000 characters, then make the character count in the response less.",
             },
             {
                 "role": "user",
@@ -28,7 +28,7 @@ def chat_gpt_response(video_text: str) -> str:
             },
         ],
         temperature=0.5,
-        max_tokens=MAX_TOKENS,
+        max_tokens=MAX_OUTPUT_TOKENS,
         top_p=1,
     )
 
