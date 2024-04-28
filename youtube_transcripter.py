@@ -1,10 +1,13 @@
-from youtube_transcript_api import YouTubeTranscriptApi
 import tiktoken
+from youtube_transcript_api import YouTubeTranscriptApi
+
+from config import MODEL
 
 
-def transcript_video(video_id: str) -> str | None:
+def transcript_video(video_id: str, min_words: int) -> str | None:
     """
-    Gets video transription in russian or english and returns text as a string.
+    Gets video transription in russian or english and returns text as a string,
+    if transcript has more words than minimum words.
 
     Args:
         url (str): The YouTube video ID.
@@ -18,9 +21,15 @@ def transcript_video(video_id: str) -> str | None:
 
         if transcript:
             transcript_text = transcript.fetch()
-            # Combining all text pieces into a single string
-            full_transcript = " ".join([item["text"] for item in transcript_text])
-            return full_transcript.strip()
+            transcript_list = [item["text"] for item in transcript_text]
+            total_words = sum(len(item.split()) for item in transcript_list)
+            if total_words < min_words:
+                return None
+            else:
+                # Combining all text pieces into a single string
+                full_transcript = " ".join(transcript_list)
+                # Counting all words in the combined transcript
+                return full_transcript.strip()
         else:
             return None
     except Exception as e:
@@ -64,7 +73,7 @@ def reduce_transcript_to_max_tokens(transcript: str, max_tokens: int) -> str:
         str: The reduced transcript text.
     """
 
-    encoding = tiktoken.get_encoding("cl100k_base")
+    encoding = tiktoken.encoding_for_model(f"{MODEL}")
     encoded_transcript = encoding.encode(transcript)
     num_tokens = len(encoded_transcript)
 
